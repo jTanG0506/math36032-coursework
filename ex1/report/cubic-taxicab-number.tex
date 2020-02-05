@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cubic Taxicab Number
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cubic Taxicab Number}
+\begin{definition}
+	A \textbf{cubic taxicab number} is a positive integer that can be expressed as the sum of two positive cubic numbers in at least two distinct ways.
+\end{definition}
+
+\begin{example}
+	The first cubic taxicab number is $1729$, since $1729 = 1^3 + 12^3 = 9^3 = 10^3$.
+\end{example}
+
+\begin{problem}
+	Given a positive integer $N$, how can we determine the smallest cubic taxicab number greater or equal to $N$? In particular, how can we write a function \lstinline|CubicTaxicabNum(N)| such that \lstinline|ctn = CubicTaxicabNum(N)| returns the smallest cubic taxicab number greater or equal to $N$?
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Approach
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Approach}
+Suppose that we have a function \lstinline|IsCubicTaxicabNum(N)| that determines whether a positive integer $N$ is a cubic taxicab number, then we are able to deduce the smallest cubic taxicab number greater or equal to $N$ by checking the integers greater than or equal to $N$ in turn, until we find a cubic taxicab number.\\
+
+\begin{lstlisting}
+function ctn = CubicTaxicabNum(N)
+% CUBICTAXICABNUM    Returns the smallest cubic taxicab number greater
+%                    than or equal to N
+
+	ctn = N;
+
+	while (~IsCubicTaxicabNum(ctn))
+    	ctn = ctn + 1;
+	end
+end
+\end{lstlisting}
+
+\noindent
+All that remains to do is to implement the function \lstinline|IsCubicTaxicabNum(n)|, such that the function returns $1$ if $n$ is a taxicab number and $0$ otherwise.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Is it a Cubic Taxicab Number?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Is it a Cubic Taxicab Number?}
+
+In this section, we will look at how to implement the function \lstinline|IsCubicTaxicabNum(N)| that determines whether a positive integer $N$ is a cubic taxicab number. First, we will make some observations that will help us derive an implementation for \lstinline|IsCubicTaxicabNum(N)|.
+
+\begin{claim}
+	Suppose that $t$ is a positive integer such that $t = x^3 + y^3$, where $x, y$ are positive integers, then $x, y \leq \lfloor \sqrt[3]{t} \rfloor$.
+\end{claim}
+\begin{proof}
+	Let $x, y, t$ be positive integers such that $t = x^3 + y^3$. Suppose by contradiction, we have $x > \lfloor \sqrt[3]{t} \rfloor$. Note that $\lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$. As $x$ is an integer, we must have $x \geq \lceil \sqrt[3]{t} \rceil$. Together, we have $x \geq \lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$, which implies $x^3 \geq \lceil \sqrt[3]{t} \rceil^3 \geq t$. In particular, for $t = x^3 + y^3$ to hold, we must have $t = x^3$, but this means that we must have $y = 0$, contradicting the choice of $y$ being a positive integer.
+\end{proof}
+
+\begin{observation}
+	Suppose that $t$ is a positive integer such that $t = x^3 + y^3$, where $x, y$ are positive integers, then there is no positive integer $a \neq x$, such that $t = a^3 + y^3$. Similarly, there is no positive integer $b \neq y$, such that $t = x^3 + b^3$.
+\end{observation}
+\begin{proof}
+	Let $a, x, y, t$ be positive integers such that $x^3 + y^3 = t$ and $a^3 + y^3 = t$. We have $x^3 + y^3 = t = a^3 + y^3$, and so $x^3 = a^3$. As both $x$ and $a$ are positive integers, we must have $x = a$. By symmetry, the latter statement also holds.
+\end{proof}
+
+\begin{observation}
+	Suppose that $t$ is a positive integer such that $x^3 + y^3 < t$, where $x, y$ are positive integers, with $x \leq y$. Then, there is no positive integer $z < y$, with $x^3 + z^3 = t$.
+\end{observation}
+\begin{proof}
+	Let $x, y, t$ be positive integers with $x \leq y$ and $x^3 + y^3 < t$. Let $z$ be any positive integer with $z < y$, then we must have $z^3 < y^3$. It follows that $x^3 + z^3 < x^3 + y^3 < t$ and so the result holds.
+\end{proof}
+
+\begin{observation}
+	Suppose that $t$ is a positive integer such that $x^3 + y^3 > t$, where $x, y$ are positive integers, with $x \leq y$. Then, there is no integer $z > x$, with $z^3 + y^3 = t$.
+\end{observation}
+\begin{proof}
+	Let $x, y, t$ be positive integers with $x \leq y$ and $x^3 + y^3 > t$. Let $z$ be any positive integer with $z > x$, then we must have $z^3 > x^3$. It follows that $z^3 + y^3 > x^3 + y^3 > t$ and so the result holds.
+\end{proof}
+
+\subsubsection{Algorithm}
+As a result of the above observations, we have an algorithm for determining whether a positive integer $N$ is a cubic taxicab number. The pseudocode for the algorithm is given below.
+
+\begin{lstlisting}
+Algorithm IsCubicTaxicabNum(N)
+	Let n = 0 be the number of distinct pairs we've found
+	Let left = 1
+	Let right = the integral part of the cube root of N
+	
+	While (left <= right)
+		t = left^3 + right^3
+		If (t = N)
+			n = n + 1
+			If (n = 2)
+				Return Yes, as we have found two distinct pairs
+			End If
+			left = left + 1
+			right = right - 1
+		Else If (t < N)
+			left = left + 1
+		Else
+			right = right - 1
+		End If
+	End While
+	
+	Return No, as we have not have found 2 distinct pairs
+End IsCubicTaxicabNum
+\end{lstlisting}
+
+\subsubsection{Implementation}
+The implementation of \lstinline|IsCubicTaxicabNum(N)| in MATLAB is as follows.
+
+\begin{lstlisting}
+function isTaxicab = IsCubicTaxicabNum(N)
+% ISCUBICTAXICABNUM    Returns isTaxicab = 1, if N is a taxicab number
+%                      Returns isTaxicab = 0, otherwise
+
+nPairs = 0;
+
+left = 1;
+right = floor(nthroot(N, 3));
+
+while (left < right)
+    sum = left^3 + right^3;
+    if (sum == N)
+        nPairs = nPairs + 1;
+        if (nPairs == 2)
+            isTaxicab = true;
+            return;
+        end
+        left = left + 1;
+        right = right - 1;
+    elseif (sum < N)
+        left = left + 1;
+    else
+        right = right - 1;
+    end
+end
+
+isTaxicab = false;
+
+end
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Analysis}
+
+\begin{example}
+	The smallest cubic taxicab number greater or equal to 36032 is 39312. Indeed, 39312 is a cubic taxicab number since $39312 = 2^3 + 34^3 = 15^3 + 33^3$.
+\end{example}

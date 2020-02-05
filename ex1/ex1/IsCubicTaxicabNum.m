@@ -4,10 +4,10 @@ function isTaxicab = IsCubicTaxicabNum(N)
 
 nPairs = 0;
 
-left = 0;
+left = 1;
 right = floor(nthroot(N, 3));
 
-while (left < right)
+while (left <= right)
     sum = left^3 + right^3;
     if (sum == N)
         nPairs = nPairs + 1;
