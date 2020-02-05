@@ -1,0 +1,50 @@
+\documentclass[11pt]{article}
+
+\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{lstfiracode}
+\usepackage{fontspec}
+\setmonofont{Fira Code}[
+  Contextuals=Alternate
+]
+\newfontfamily{\firaseries}{Fira Code}
+\usepackage{listings}
+\usepackage{lstfiracode}
+\lstset{
+  language=Octave,
+  basicstyle=\footnotesize\firaseries,
+  numbers=left,
+  style=FiraCodeStyle,
+  tabsize=2
+}
+\usepackage{listings}
+
+\makeatletter
+\lstdefinestyle{inline-style}{
+  basicstyle=%
+    \ttfamily
+    \lst@ifdisplaystyle\scriptsize\fi
+}
+\makeatother
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{problem}[definition]{Problem}
+\newtheorem{claim}[definition]{Claim}
+\newtheorem{observation}[definition]{Observation}
+
+\begin{document}
+
+\title{Problem Solving By Computer - Project 1}
+\date{}
+\maketitle
+
+\input{introduction}
+\input{cubic-taxicab-number}
+\input{catalans-constant}
+\input{sum-of-reciprocal-squares-with-prime-factors}
+
+\end{document}
