@@ -3,10 +3,10 @@ function sum = SumPF(N)
 %          with prime factors by summing the first N terms
 
 sum = 1;
-sigma = @(x) length(factor(x));
+omega = @(x) length(factor(x));
 
 for k = 2:N
-    sum = sum + (-1)^sigma(k) / k^2;
+    sum = sum + (-1)^omega(k) / k^2;
 end
 
 end
