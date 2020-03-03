@@ -3,9 +3,7 @@ function ctn = CubicTaxicabNum(N)
 %                    than or equal to N
 
 ctn = N;
-
 while (~IsCubicTaxicabNum(ctn))
     ctn = ctn + 1;
 end
-
 end
