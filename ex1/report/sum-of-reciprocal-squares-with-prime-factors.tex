@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sum of Reciprocal Squares with Prime Factors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Sum of Reciprocal Squares with Prime Factors}
+
+\begin{definition}
+	The \textbf{sum of reciprocal squares}, also known as the Basel problem, asks for the precise summation of the reciprocal squares of the natural numbers. That is,
+	$$\sum_{n=1}^\infty \; \frac{1}{n^2} = \frac{1}{1^2} + \frac{1}{2^2} + \frac{1}{3^2} + \frac{1}{4^2} + \dots$$
+	which was shown to be exactly $\pi^2/6$ by Leonhard Euler.
+\end{definition}
+
+\begin{definition}
+	The \textbf{prime omega function (with multiplicity)} $\Omega(n)$ counts the number of prime factors of a natural number $n$, counting multiplicity. By convention, we have $\Omega(1) = 0$.
+\end{definition}
+
+\begin{example}
+	$\Omega(12) = 3$ as $12 = 2^2 \cdot 3^1$, $\Omega(25) = 2$ as $25 = 5^2$ and $\Omega(47) = 1$ as $47$ is a prime number. Moreover, $\Omega(p) = 1$ for any prime number $p$, as prime numbers only have one prime factor, by definition.
+\end{example}
+
+\begin{definition}
+	The \textbf{sum of reciprocal squares with prime factors} asks for the precise summation of the following sum.
+	$$\sum_{n=1}^\infty \; \frac{(-1)^{\Omega(n)}}{n^2} = \frac{1}{1^2} - \frac{1}{2^2} - \frac{1}{3^2} + \frac{1}{4^2} + \dots$$
+\end{definition}
+
+\begin{problem}
+	How can we derive a reasonable approximation of the sum of the reciprocal squares with prime factors? In particular, can we make any observations about the answer by truncating a finite number of terms?
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Approach
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Approximating the Sum of Reciprocal Squares with Prime Factors}
+
+\begin{observation}
+	For any $a, b \in \mathbb{N}$ with $a < b$, we have
+	$$-\sum_{n=a}^b \frac{1}{n^2} \leq \sum_{n=a}^b \frac{(-1)^{\Omega(n)}}{n^2} \leq \sum_{n=a}^b \frac{1}{n^2} \quad \text{and} \quad -\sum_{n=a}^\infty \frac{1}{n^2} \leq \sum_{n=a}^\infty \frac{(-1)^{\Omega(n)}}{n^2} \leq \sum_{n=a}^\infty \frac{1}{n^2}$$
+\end{observation}
+
+\begin{observation}
+	Let $x, y, z \in \mathbb{R}$ with $x \leq y \leq z$. Let $n \in \mathbb{N} \cup \{0\}$. Let \lstinline|round(a, n)| be a function that rounds $a$ to $n$ decimal places. If \lstinline|round(x, n) = round(z, n) = c|, then \lstinline|round(y, n) = c|. That is, if $x$ and $z$ round to the same value for $n$ decimal places, say $c$, then $y$ rounded to $n$ decimal places is also $c$.
+\end{observation}
+
+\begin{notation}
+$$S(a, b) = \sum_{n = a}^b \frac{(-1)^{\Omega(n)}}{n^2} \quad \text{and} \quad T(a, b) = \sum_{n = a}^b \frac{1}{n^2}$$
+\end{notation}
+\noindent
+We know that $T(1, \infty) = \pi^2 / 6$ and our goal is to approximate $S(1, \infty)$.
+
+\newpage
+\begin{observation}
+	We can compute $T(k + 1, \infty)$ by $T(k + 1, \infty) = T(1, \infty) - T(1, k) = \pi^2 / 6 - T(1, k)$. That is, we can compute $T(k + 1, \infty)$ by subtracting the first $k$ terms from $\pi^2 / 6$.
+\end{observation}
+
+\subsubsection{Approach}
+
+Let $k \in \mathbb{N}$. It follows from Observation 3.6 that we have
+$$S(1, k) - T(k + 1, \infty) \leq \underbrace{S(1, k) + S(k + 1, \infty)}_{S(1, \infty)} \leq S(1, k) + T(k + 1, \infty)$$
+
+\noindent
+In particular, for some $d \in \mathbb{N}$, if we are able to find $k$ such that the above inequality holds, with the lower and upper bound rounding to the same value (up to $d$ decimal places), then by Observation 3.7, this value is an accurate approximation for $S(1, \infty)$ up to $d$ decimal places.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Implementation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Implementation}
+\subsubsection{Prime Omega Function}
+First, we need to implement the function \lstinline|PrimeOmega(N)| such that \lstinline|n = PrimeOmega(N)| returns the number of prime factors of $N$ (counting multiplicity). In fact, we can make use of the \lstinline|factor(N)| function provided by MATLAB, which returns a vector containing the prime factors of $N$. It follows that \lstinline|PrimeOmega(N)| can be implemented by counting the length of the vector returned by \lstinline|factor(N)| and can be implemented as an anonymous function, as follows.
+
+\begin{lstlisting}
+PrimeOmega = @(x) (x != 1) * length(factor(x));
+\end{lstlisting}
+
+\noindent
+As \lstinline|factor(1) = [1]|, we use \lstinline|(x != 1)| to handle the case $\Omega(1) = 0$. That is, if $x \neq 1$, then \lstinline|PrimeOmega(x)| returns \lstinline|length(factor(x))|, otherwise it returns \lstinline|0|.
+
+\subsubsection{Finding the value of $k$}
+Let $d$ be the number of decimal places which we wish to get an approximation for $S(1, \infty)$. Let $k = 0$, $S = 0$ and $T = \pi^2 / 6$. We can enumerate over values of $k$ in turn, adding $(-1)^{\Omega(k)} / k^2$ to $S$, and subtracting $1 / k^2$ from $T$. If $S - T$ and $S + T$ round to the same value up to $d$ decimal places, then we have an approximation for $S(1, \infty)$ up to $d$ decimal places, by considering the first $k$ terms.
+
+\newpage
+\subsubsection{Sum of Reciprocal Squares with Prime Factors}
+The implementation of \lstinline|SumPF| in MATLAB is as follows.
+
+\begin{lstlisting}
+function SumPF
+% SUMPF    Finds an approximation of the sum of reciprocal squares
+%          with prime factors
+
+S = 0;
+T = pi^2 / 6;
+k = 0; d = 1;
+PrimeOmega = @(n) (n != 1) * length(factor(n));
+
+fprintf('%-8s %-8s %8s\n', 'Terms', 'Value', 'Accuracy');
+while (k < 1000000)
+  if (round(S - T, d) == round(S + T, d))
+    fprintf('%-8d %8f %-8d\n', k, round(S, d), d);
+    d = d + 1;
+  end
+  k = k + 1;
+  S = S + (-1)^PrimeOmega(k) / k^2;
+  T = T - 1 / k^2;
+end
+end
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Analysis}
+
+\begin{lstlisting}
+>> SumPF
+Terms    Value    Accuracy
+123      0.700000 1       
+334      0.660000 2       
+2102     0.658000 3       
+42353    0.658000 4       
+728565   0.657970 5       
+\end{lstlisting}
+
+\begin{example}
+	By considering the first $2102$ terms of the sum of reciprocal squares with prime factors, we get that $S = 0.6580$ to 4 decimal places. Similarly, we get that $S = 0.65797$ to 5 decimal places, by considering $728565$ terms.
+\end{example}
+
+\subsubsection{Alternate Approach}
+Our implementation of \lstinline|SumPF| makes use of the sum of reciprocal squares, which was shown to be $\pi^2 / 6$. As a result, our implementation would not be suitable to compute an approximation for an arbitrary sum. Alternatively, we could derive an approach that deduces such bounds without knowledge of another summation.

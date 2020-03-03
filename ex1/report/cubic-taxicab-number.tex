@@ -21,35 +21,24 @@
 \subsection{Approach}
 Suppose that we have a function \lstinline|IsCubicTaxicabNum(N)| that determines whether a positive integer $N$ is a cubic taxicab number, then we are able to deduce the smallest cubic taxicab number greater or equal to $N$ by checking the integers greater than or equal to $N$ in turn, until we find a cubic taxicab number.\\
 
-\begin{lstlisting}
-function ctn = CubicTaxicabNum(N)
-% CUBICTAXICABNUM    Returns the smallest cubic taxicab number greater
-%                    than or equal to N
-
-	ctn = N;
-
-	while (~IsCubicTaxicabNum(ctn))
-    	ctn = ctn + 1;
-	end
-end
-\end{lstlisting}
+\lstinputlisting{../ex1/CubicTaxicabNum.m}
 
 \noindent
-All that remains to do is to implement the function \lstinline|IsCubicTaxicabNum(n)|, such that the function returns $1$ if $n$ is a taxicab number and $0$ otherwise.
+All that remains to do is to implement the function \lstinline|IsCubicTaxicabNum(N)|, such that the function returns \lstinline|1| if $N$ is a taxicab number and \lstinline|0| otherwise.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Is it a Cubic Taxicab Number?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\newpage
 \subsection{Is it a Cubic Taxicab Number?}
 
-In this section, we will look at how to implement the function \lstinline|IsCubicTaxicabNum(N)| that determines whether a positive integer $N$ is a cubic taxicab number. First, we will make some observations that will help us derive an implementation for \lstinline|IsCubicTaxicabNum(N)|.
+Before looking at the implementation of the function \lstinline|IsCubicTaxicabNum(N)|, we will first make some observations that will help us derive an implementation for \lstinline|IsCubicTaxicabNum(N)|.
 
 \begin{claim}
 	Suppose that $t$ is a positive integer such that $t = x^3 + y^3$, where $x, y$ are positive integers, then $x, y \leq \lfloor \sqrt[3]{t} \rfloor$.
 \end{claim}
 \begin{proof}
-	Let $x, y, t$ be positive integers such that $t = x^3 + y^3$. Suppose by contradiction, we have $x > \lfloor \sqrt[3]{t} \rfloor$. Note that $\lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$. As $x$ is an integer, we must have $x \geq \lceil \sqrt[3]{t} \rceil$. Together, we have $x \geq \lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$, which implies $x^3 \geq \lceil \sqrt[3]{t} \rceil^3 \geq t$. In particular, for $t = x^3 + y^3$ to hold, we must have $t = x^3$, but this means that we must have $y = 0$, contradicting the choice of $y$ being a positive integer.
+	Let $x, y, t$ be positive integers such that $t = x^3 + y^3$. Suppose by contradiction, we have $x > \lfloor \sqrt[3]{t} \rfloor$. Note that $\lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$. As $x$ is an integer, we must have $x \geq \lceil \sqrt[3]{t} \rceil$. Together, we have $x \geq \lceil \sqrt[3]{t} \rceil \geq \sqrt[3]{t}$ and so $x^3 \geq \lceil \sqrt[3]{t} \rceil^3 \geq t$. In particular, for $t = x^3 + y^3$ to hold, we must have $t = x^3$, but this means that we must have $y = 0$, contradicting the choice of $y$ being a positive integer.
 \end{proof}
 
 \begin{observation}
@@ -73,35 +62,7 @@ In this section, we will look at how to implement the function \lstinline|IsCubi
 	Let $x, y, t$ be positive integers with $x \leq y$ and $x^3 + y^3 > t$. Let $z$ be any positive integer with $z > x$, then we must have $z^3 > x^3$. It follows that $z^3 + y^3 > x^3 + y^3 > t$ and so the result holds.
 \end{proof}
 
-\subsubsection{Algorithm}
-As a result of the above observations, we have an algorithm for determining whether a positive integer $N$ is a cubic taxicab number. The pseudocode for the algorithm is given below.
-
-\begin{lstlisting}
-Algorithm IsCubicTaxicabNum(N)
-	Let n = 0 be the number of distinct pairs we've found
-	Let left = 1
-	Let right = the integral part of the cube root of N
-	
-	While (left <= right)
-		t = left^3 + right^3
-		If (t = N)
-			n = n + 1
-			If (n = 2)
-				Return Yes, as we have found two distinct pairs
-			End If
-			left = left + 1
-			right = right - 1
-		Else If (t < N)
-			left = left + 1
-		Else
-			right = right - 1
-		End If
-	End While
-	
-	Return No, as we have not have found 2 distinct pairs
-End IsCubicTaxicabNum
-\end{lstlisting}
-
+\newpage
 \subsubsection{Implementation}
 The implementation of \lstinline|IsCubicTaxicabNum(N)| in MATLAB is as follows.
 
@@ -111,29 +72,25 @@ function isTaxicab = IsCubicTaxicabNum(N)
 %                      Returns isTaxicab = 0, otherwise
 
 nPairs = 0;
-
 left = 1;
-right = floor(nthroot(N, 3));
-
-while (left < right)
+right = floor(nthroot(N, 3));                    % Claim 1.4
+while (left <= right)
     sum = left^3 + right^3;
     if (sum == N)
         nPairs = nPairs + 1;
-        if (nPairs == 2)
-            isTaxicab = true;
+        if (nPairs == 2)                         % If we have found the
+            isTaxicab = true;                    % second pair, we are done
             return;
         end
-        left = left + 1;
-        right = right - 1;
+        left = left + 1;                         % Observation 1.5
+        right = right - 1;                       % Observation 1.5
     elseif (sum < N)
-        left = left + 1;
+        left = left + 1;                         % Observation 1.6
     else
-        right = right - 1;
+        right = right - 1;                       % Observation 1.7
     end
 end
-
 isTaxicab = false;
-
 end
 \end{lstlisting}
 
@@ -144,5 +101,12 @@ end
 \subsection{Analysis}
 
 \begin{example}
+	We can verify that the first cubic taxicab number is indeed 1729 by calling \lstinline|CubicTaxicabNum(1)|.
+\end{example}
+
+\begin{example}
 	The smallest cubic taxicab number greater or equal to 36032 is 39312. Indeed, 39312 is a cubic taxicab number since $39312 = 2^3 + 34^3 = 15^3 + 33^3$.
 \end{example}
+
+\subsubsection{Complexity}
+The implementation of \lstinline|IsCubicTaxicabNum(N)| makes use of the \textit{two-pointer technique}, in which we have two pointers, \lstinline|left| and \lstinline|right|, and we insist that \lstinline|left <= right|. We compute the sum of the cubes, \lstinline|S = left^3 + right^3| and if \lstinline|S < N|, then we increment \lstinline|left| by 1, and if \lstinline|S > N|, then we decrement \lstinline|right| by 1. If \lstinline|S == N|, then we increment \lstinline|left| by 1 and decrement \lstinline|right| by 1. It follows that we have at most $\sqrt[3]{N}$ iterations of the \lstinline|while| loop, and the operations inside the \lstinline|while| loop run in constant time, so the time complexity of \lstinline|IsCubicTaxicabNum(N)| is $O(\sqrt[3]{N})$.

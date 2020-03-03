@@ -1,0 +1,95 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Catalan's Constant
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Catalan's Constant}
+
+\begin{definition}
+	The \textbf{Catalan's constant} is a mathematical constant named after Eug\'ene Charles Catalan, and is defined as
+	$$G = \sum_{k=0}^\infty \frac{(-1)^k}{(2k+1)^2} = \frac{1}{1^2} - \frac{1}{3^2} + \frac{1}{5^2} + \dots \approx 0.915965594177219$$
+	Although the Catalan's constant $G$ can be expressed in terms of the above sum of series, it is not known whether $G$ is irrational or not.
+\end{definition}
+
+\begin{problem}
+	In many situations, it would be more convenient to approximate the Catalan's constant as a ratio of two positive integers. Given a positive integer $N$, what is the best rational approximation $p / q$ of the Catalan's constant, subject to the constraint $p + q \leq N$. In particular, how can we write a function \lstinline|RatAppCat(N)| such that \lstinline|[p, q] = RatAppCat(N)| returns the pair of integers $p$ and $q$ for the best rational approximation $p / q$ of $G$, such that $p + q \leq N$?
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Approach
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Approximating Catalan's Constant}
+\begin{observation}
+	Given $G = 0.915965594177219$ and an integer $q$, we can find $p$ such that $p / q = G$, by computing $p = Gq$. Of course, $p$ needs not to be an integer; however, we can find the integer $p_0$ such that $p_0 / q$ is closest to $G$ among all integers by $p_0 = \text{round}(p)$.
+\end{observation}
+
+\begin{claim}
+	Suppose we have integers $p_0, p_1, q_0, q_1$ such that $p_0 / q_0 = G$ and $p_1 / q_1 = G$. If we have $q_1 > q_0$, then it must the case $p_1 > p_0$.
+\end{claim}
+
+\begin{proof}
+	Let $p_0, p_1, q_0, q_1$ be integers such that $p_0 / q_0 = G$, $p_1 / q_1 = G$ and $q_0 < q_1$. We have $p_0 = Gq_0$ and $p_1 = Gq_1$, but as $q_0 < q_1$, we have $Gq_0 < Gq_1$. It follows that $p_0 < p_1$.
+\end{proof}
+
+\subsubsection{Approach}
+As a result of Observation 2.3, we can enumerate over values of $q$ in ascending order, computing the \textit{perfect} integer $p$ for each denominator $q$, and checking whether  $p / q$ is a better approximation than any previous pairs of $(p, q)$ considered. Further, when we encounter a pair $(p, q)$ such that $p + q > N$, then we are done. Indeed, as we are enumerating over values of $q$ in ascending order, any subsequent pairs we consider, say $(p_0, q_0)$, we will have $q_0 > q_1$, and so $p_0 > p_1$ by Claim 2.4. In particular, $p_0 + q_0 > p + q > N$.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Implementation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Implementation}
+The implementation of \lstinline|RatAppCat(N)| in MATLAB is as follows.
+
+\begin{lstlisting}
+function [p, q] = RatAppCat(N)
+% RATAPPCAT    Returns the best approximation p / q of the Catalan's 
+%              constant, among all pairs of (p, q) such that p + q <= N.
+
+G = 0.915965594177219;
+p = 0; q = 1;                          % The best (p, q) pair so far
+minDelta = abs(G - p / q);             % The difference between p / q and G
+
+for q0 = 1 : N
+  p0 = round(G * q0);                  % Observation 2.3
+  if (p0 + q0 > N)                     % Claim 2.4
+    return
+  end
+  delta = abs(G - p0 / q0);              
+  if (delta < minDelta)                % Update if current pair is better
+    minDelta = delta;                  % than the best pair we have seen
+    p = p0; q = q0;
+  end
+end
+end
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Analysis}
+
+\begin{example}
+	For $N = 2018$, the pair of integers $109$ and $119$ provides the best rational approximation of the Catalan's constant, with $109/119 = 0.915966386554622$.
+\end{example}
+
+\subsubsection{Complexity}
+The implementation of \lstinline|RatAppCat(N)| loops over possible denominators from $1$ to $N$, and for each possible denominator, we compute the perfect numerator, and check whether this pair gives a better approximation than any previously encountered pairs. The operations in each iteration are run in constant time, and so the time complexity of \lstinline|RatAppCat(N)| is $O(N)$, as the loop is run at most $N$ times. The space complexity of \lstinline|RatAppCat(N)| is $O(1)$, as we only store a constant number of variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

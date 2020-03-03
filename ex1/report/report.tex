@@ -2,10 +2,12 @@
 
 \usepackage{geometry}
 \usepackage{amsthm}
+\usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
 \usepackage{lstfiracode}
 \usepackage{fontspec}
+
 \setmonofont{Fira Code}[
   Contextuals=Alternate
 ]
@@ -15,11 +17,11 @@
 \lstset{
   language=Octave,
   basicstyle=\footnotesize\firaseries,
-  numbers=left,
+  numbers=none,
+  showstringspaces=false,
   style=FiraCodeStyle,
   tabsize=2
 }
-\usepackage{listings}
 
 \makeatletter
 \lstdefinestyle{inline-style}{
@@ -29,12 +31,15 @@
 }
 \makeatother
 
+\newcommand*{\noaccsupp}[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{example}[definition]{Example}
 \newtheorem{problem}[definition]{Problem}
 \newtheorem{claim}[definition]{Claim}
 \newtheorem{observation}[definition]{Observation}
+\newtheorem{notation}[definition]{Notation}
 
 \begin{document}
 
@@ -42,9 +47,10 @@
 \date{}
 \maketitle
 
-\input{introduction}
 \input{cubic-taxicab-number}
+\newpage
 \input{catalans-constant}
+\newpage
 \input{sum-of-reciprocal-squares-with-prime-factors}
 
 \end{document}
