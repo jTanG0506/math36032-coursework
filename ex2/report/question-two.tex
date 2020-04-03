@@ -1,0 +1,176 @@
+\newpage
+\section{Modelling moving interceptors}
+
+Suppose we wish to fire the cannonballs to destroy a target at 15000 meters away. However, there are interceptors located at 12000 meters away, which are being fired vertically at regular intervals, which could block the cannonballs. Each interceptor is 1000 meters long, is launched every 20 seconds, and moves upward with uniform velocity. The initial configuration at time $t = 0$ is shown below.\\
+
+\noindent
+\textbf{Question:} What are the possible firing angles and associated firing times, such that the cannonball will destroy the target without being blocked by an interceptor?
+
+\input{figures/interceptors-diagram}
+
+\subsection{Finding the required firing angles to reach the target}
+First, we observe that the firing angle required to yield a given horizontal displacement is independent of the firing time. As a result, we can start by finding the firing angles in order to reach the target horizontal displacement of 15000m. Using our \lstinline|distance_function|, we can plot the horizontal displacement against the associated firing angle as follows.
+
+\begin{lstlisting}
+distance = @(theta) distance_function(g, v, m, K, theta);
+
+angles = linspace(0, pi / 2, 100);
+displacement = arrayfun(distance, angles);
+displacement(1) = 0;
+
+plot(angles, displacement);
+title('Horizontal Displacement vs Firing Angle');
+xlabel('Firing Angle (degrees)');
+ylabel('Horizontal Displacement (m)');
+yline(15000);
+
+% Remove exponential notation from axis tick labels
+ax = gca;
+ax.YAxis.Exponent = 0;
+\end{lstlisting}
+
+\noindent
+For our chosen model parameters ($g = 9.8, \; v = 450, \; m = 6, \; K = 0.00002$), the plot for the horizontal displacement against the associated firing angle is shown below.
+\diagram{angle_vs_displacement}
+
+\noindent
+By looking at the plot, we see that the distance function $f_{x}(\theta)$ is a unimodal function. That is, $f_{x}(\theta)$ is increasing on $[0, \theta_{max}]$, and decreasing on $[\theta_{max}, \pi / 2]$, where $\theta_{max}$ is the firing angle that yields the maximum horizontal displacement. In particular, suppose we wish to hit a target at distance $d$, then, there are three possible outcomes:
+\begin{enumerate}
+	\item If $d > f_x(\theta_{max})$, then it is impossible to hit the target.
+	\item If $d = f_x(\theta_{max})$, then $\theta_{max}$ is precisely the only firing angle to reach this distance.
+	\item If $d < f_x(\theta_{max})$, then there are two solutions to the equation $f_x(\theta) = d$. One solution lies in the interval $(0, \theta_{max})$, and the other lies in the interval $(\theta_{max}, \pi / 2)$.
+\end{enumerate}
+
+\noindent
+Earlier, we saw that the firing angle which yields the maximum horizontal displacement is $\theta_{max} = 0.778422$ with $f_x(\theta_{max}) = 19617.77$m. As the distance of our target, 15000m, is less than the maximum distance, we have two possible firing angles, which can be found using the \lstinline|fzero| function provided by MATLAB. Indeed, we can use \lstinline|fzero| to find the values of $\theta$ where the distance function $f_x(\theta)$ and the line $y = 15000$ intersect, by finding the roots of $f_{15000}(\theta) = f_x(\theta) - 15000$. The implementation of finding the firing angles is as follows.
+
+\begin{lstlisting}
+target_distance = 15000;
+distance_fun = @(theta) distance_function(g, v, m, K, theta);
+[maxTheta, ~] = fminbnd(@(theta) -distance_fun(theta), 0, pi / 2);
+
+distance_from_target = @(theta) distance_fun(theta) - target_distance;
+thetaOne = fzero(distance_from_target, [eps, maxTheta]);
+thetaTwo = fzero(distance_from_target, [maxTheta, pi / 2]);
+\end{lstlisting}
+
+\noindent
+We conclude that the two firing angles which yield a horizontal distance of 15000m are $\theta_1 = 0.425366$ and $\theta_2 = 1.133637$. The trajectory plots for $\theta_1$ and $\theta_2$ are shown below.
+
+\diagram{firing_angles}
+
+\subsection{Finding the time and height for a given horizontal displacement}
+In order to determine whether the trajectory of the cannonball is blocked by the interceptor, we need to know the height of the cannonball when the distance travelled by the ball is 12000m. As the interceptors are moving, we also need to know the time taken for the cannonball to reach the horizontal distance of 12000m. In order to do this, we can add a non-terminating event to our event function, which we can use to obtain the time and height at which the cannonball arrives at the interceptors. We can add a second event to our event function as follows.
+
+\begin{lstlisting}
+function [value, isTerminal, direction] = events_function(t, z, distance)
+  value(1) = z(1) - distance;    % When the distance is 12000,
+  isTerminal(1) = 0;             % take note of the event.
+  direction(1) = 1;
+  
+  value(2) = z(2);               % When the height is 0,
+  isTerminal(2) = 1;             % terminate integration,
+  direction(2) = -1;             % but only if the ball is falling
+end
+\end{lstlisting}
+
+\noindent
+Notice that, for this event, we set \lstinline|isTerminal = 0| to indicate that we only want to detect when this event occurs, rather than halt integration when this event occurs.
+
+\newpage
+\noindent
+Consequently, we need to update our \lstinline|projection_solution| function to take into account the \lstinline|distance| parameter, as follows. Notice that on Line 5, we use a similar design pattern as earlier, by using \lstinline|events_function(t, z, distance)| to generate \lstinline|events_fun(t, z)|.
+
+\begin{lstlisting}
+function [t, z, te, ze] = projection_solution(g, v, m, K, theta, distance)
+  ode = @(t, z) projection_ode(t, z, g, m, K);
+  tspan = [0, 2 * v / g];
+  ic = [0, 0, v * cos(theta), v * sin(theta)];
+  events_fun = @(t, z) events_function(t, z, distance);
+  options = odeset('events', events_fun, 'reltol', 1e-8);
+  [t, z, te, ze] = ode45(ode, tspan, ic, options);
+end
+\end{lstlisting}
+
+\noindent
+Finally, we can obtain the information (time and height of cannonball) about the event at which the cannonball arrives at the interceptors, as follows.
+
+\begin{lstlisting}
+ic_distance = 12000;
+[t1, z1, te1, ze1] = projection_solution(g, v, m, K, thetaOne, ic_distance);
+[t2, z2, te2, ze2] = projection_solution(g, v, m, K, thetaTwo, ic_distance);
+
+fprintf('[theta = %.4f]: %.4fs to reach %dm, with height %.4fm\n', ...
+        thetaOne, te1(1), ic_distance, ze1(1, 2));
+fprintf('[theta = %.4f]: %.4fs to reach %dm, with height %.4fm\n', ...
+        thetaTwo, te2(1), ic_distance, ze2(1, 2));
+\end{lstlisting}
+
+\noindent
+We conclude that by firing at angle $\theta_1 = 0.425366$, it takes $t_1 = 29.8907$s to reach a distance of 12000m, with height $y_1 = 1117.1270$m. Likewise, if we fire at angle $\theta_2 = 1.133637$, it takes $t_2 = 65.0186$s to reach a distance of 12000m, with height $y_2 = 5318.9654$m.
+
+\subsection{Finding the firing times to avoid the interceptors}
+All that remains in order to find the firing times such that the trajectory of the cannonball avoids the interceptors, is to model the interceptors. That is, we need to determine whether an interceptor is present, for a given time and height. It turns out that we can model the positions of the interceptors by a system of inequalities, as shown in the figure below.
+
+\input{figures/interceptor-graph}
+
+\noindent
+The shaded regions indicate the presence of an interceptor, whereas the the non-shaded regions indicate the absence of an interceptor. Each shaded region is defined by two lines, the line to the left of the shaded region which indicates the top of the interceptor, and the line to the right of the shaded region which indicates the bottom of the interceptor.\\
+
+\noindent
+Observe that the gradient of the lines are 100 and every lower bound line passes through the point $(20n, 0)$, so the lower bound lines are of the form $y = 100(t - 20n)$, $n \in \mathbb{N} \cup \{0\}$. In order to find the maximum delay before firing the cannonball such that the cannonball misses the interceptor, we need to find the point $(t_d, h_i)$, where $t_d$ lies on a lower bound line and $t_i \leq t_d$.
+
+\input{figures/interceptor_figure}
+
+\noindent
+Putting the equation of the lower bound line and the inequality together, we have
+$$\frac{1}{20}\Bigg(t_i - \frac{y_i}{100}\Bigg) \leq n.$$
+However, as $n$ is an integer, we can find the least such $n$ that satisfies the inequality by 
+$$n = \Bigg\lceil \frac{1}{20}\Bigg(t_i - \frac{y_i}{100}\Bigg) \Bigg\rceil.$$
+It follows that $t_d = 0.01 y_i + 20n$ and so the maximum delay we can wait before firing the cannonball is given by $t_d - t_i$. If $(t_i, y_i)$ lies in a shaded region, we need to calculate a minimum delay that we must wait before firing the cannonball. Observe that if the maximum delay is less than 10, then $(t_i, y_i)$ must lie in a non-shaded region, otherwise, the minimum delay can be computed by $t_d - t_i - 10$. However, for our parameters, it turns out that both $(t_1, y_1)$ and $(t_2, y_2)$ lie outside the shaded region, and so the minimum delay is 0. The implementation of finding the maximum delay is as follows.
+
+\begin{lstlisting}
+function d = delay_function(t, h)
+  n = ceil(0.05 * (t - 0.01 * h));
+  td = 0.01 * h + 20 * n - t;
+  d = [max(td - 10, 0), td];
+end
+\end{lstlisting}
+
+\newpage
+\noindent
+We find the intervals of delay for $\theta_1$ and $\theta_2$ as follows.
+\begin{lstlisting}
+ic_distance = 12000;
+[t1, z1, te1, ze1] = projection_solution(g, v, m, K, thetaOne, ic_distance);
+[t2, z2, te2, ze2] = projection_solution(g, v, m, K, thetaTwo, ic_distance);
+      
+d1 = delay_function(te1(1), ze1(1, 2));
+d2 = delay_function(te2(1), ze2(1, 2));
+      
+fprintf('[theta = %.4f]: Min Delay = %.4f, Max Delay = %.4f\n', ...
+        thetaOne, d1(1), d1(2));
+fprintf('[theta = %.4f]: Min Delay = %.4f, Max Delay = %.4f\n', ...
+        thetaTwo, d2(1), d2(2));
+\end{lstlisting}
+
+\noindent
+The above code snippet produces the following output.
+\begin{lstlisting}
+[theta = 0.4254]: Min Delay = 0.0000, Max Delay = 1.2805
+[theta = 1.1336]: Min Delay = 0.0000, Max Delay = 8.1711
+\end{lstlisting}
+
+\noindent
+We conclude that in order to fire with launch angle $\theta_1 = 0.425366$ without hitting any interceptors, we can fire at times $t \in [0, 1.2805)$. However, as the interceptors are fired periodically every 20 seconds, with the interceptor and the gap being of equal width, we can also fire every other 10 seconds after 1.2805. That is, for $\theta_1 = 0.425366$, we can fire at times $t \in (11.2805, 21.28025) \cup (31.28025, 41.28025) \cup \dots \cup (11.2805 + 20n, 21.2805 + 20n)$. \\
+
+\noindent
+Similarly, in order to avoid the interceptors when firing with launch angle $\theta_2 = 1.133637$, we can fire at times $t \in [0, 8.1711) \cup (18.1711, 28.1711) \cup \dots \cup (18.1711 + 20n, 28.1711 + 20n)$.
+
+\subsection{Results}
+\noindent
+We have found the two possible launch angles and the associated firing times, such that the cannonball will hit the target placed 15000m away, without being blocked by an interceptor.
+$$\theta_1 = 0.425366, \; t_{\theta_1} = [0, 1.2805) \cup \{(11.2805 + 20n, 21.2805 + 20n) \; \vert \; n \in \mathbb{N} \cup \{0\}\}$$
+$$\theta_2 = 1.133637, \; t_{\theta_2} = [0, 8.1711) \cup \{(18.1711 + 20n, 28.1711 + 20n) \; \vert \; n \in \mathbb{N} \cup \{0\}\}$$
+
+

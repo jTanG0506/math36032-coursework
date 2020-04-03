@@ -7,6 +7,25 @@
 \usepackage{amsfonts}
 \usepackage{lstfiracode}
 \usepackage{fontspec}
+\usepackage{bm}
+
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{mathdots}
+\usepackage{yhmath}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{gensymb}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usetikzlibrary{fadings}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shadows.blur}
+\usetikzlibrary{shapes}
 
 \setmonofont{Fira Code}[
   Contextuals=Alternate
@@ -17,7 +36,7 @@
 \lstset{
   language=Octave,
   basicstyle=\footnotesize\firaseries,
-  numbers=none,
+  numbers=left,
   showstringspaces=false,
   style=FiraCodeStyle,
   tabsize=2
@@ -33,6 +52,21 @@
 
 \newcommand*{\noaccsupp}[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
 
+\newcommand\diagram[1]{
+	\begin{center}
+		\makebox[\textwidth]{\includegraphics[width=0.8\textwidth]{figures/#1}}
+	\end{center}
+}
+
+% Ensures that rows of matrices are the same height
+\newcommand{\matrixspacinghack}{
+	\vphantom{-\frac{K}{m} v_x \sqrt{v_x^2 + v_y^2}}
+}
+
+\newcommand\abs[1]{\ensuremath{\lvert#1\rvert}}
+
+\tikzset{every picture/.style={line width=0.75pt}}
+
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{example}[definition]{Example}
@@ -46,5 +80,10 @@
 \title{Problem Solving By Computer - Project 2}
 \date{}
 \maketitle
+
+\input{introduction}
+\input{question-one}
+\input{maximum-horizontal-displacement}
+\input{question-two}
 
 \end{document}

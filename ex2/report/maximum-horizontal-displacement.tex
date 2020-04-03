@@ -1,0 +1,34 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Maximum horizontal displacement
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Maximum horizontal displacement}
+
+Suppose we have a function \lstinline|distance_fun(theta)| which returns the horizontal displacement when fired with angle \lstinline|theta|, then we can find the maximum horizontal displacement by minimising the negative of the distance function, using \lstinline|fminbnd|. Indeed, minimising the negative of a function is the same as maximising the function, and can be done as follows.
+
+\begin{lstlisting}
+[theta, distance] = fminbnd(distance_fun, 0, pi / 2);
+fprintf('Firing at %.6f radians yields a maximum distance of %.2fm\n', ...
+        theta, -distance);
+\end{lstlisting}
+
+\noindent
+Notice that, in order to use \lstinline|fminbnd|, we need to provide a function of one variable. However, we wish to generalise our code so that we can provide the model parameters $g, v, m$ and $K$. To do this, we simply create a function \lstinline|distance_function| which acts as a generator for our distance function of one variable \lstinline|distance_fun|, as follows.
+\begin{lstlisting}
+distance_fun = @(theta) -distance_function(g, v, m, K, theta);
+\end{lstlisting}
+
+\noindent
+All that remains is to write the generalised distance function. In fact, it turns out that we can implement \lstinline|distance_function| as a wrapper function over \lstinline|projection_solution|. That is, \lstinline|distance_function| is a function that calls \lstinline|projection_solution| and returns the horizontal displacement, as follows.
+\begin{lstlisting}
+function d = distance_function(g, v, m, K, theta)
+  [~, z] = projection_solution(g, v, m, K, theta);
+  d = z(end, 1);
+end
+\end{lstlisting}
+
+\noindent
+We conclude that the maximum distance of 19617.77m is achieved with a firing angle of 0.778422 radians, or $44.60^\circ$. Observe that when $K$ is positive, air drag slows down the projectile, and as expected, it does not go as far as it would in the case $K = 0$.
+
+\diagram{max_distance}
