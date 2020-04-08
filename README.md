@@ -1,4 +1,6 @@
-# math36032-coursework
+![](figures/cover.png)
+
+### About
 🎲 Repository for my MATH36032 - Problem Solving By Computer coursework (2019-2020).
 
 ### Project 1 - Three Short Questions
