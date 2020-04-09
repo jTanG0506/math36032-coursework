@@ -1,0 +1,49 @@
+\documentclass[11pt]{article}
+
+\usepackage{geometry}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{caption}
+\usepackage{graphics}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[space=true]{accsupp}
+\usepackage{color}
+
+\lstset{
+	language=matlab,
+    basicstyle=\footnotesize\ttfamily,
+    numbersep=5pt,
+    tabsize=2,
+    extendedchars=true,
+    breaklines=true,
+    frame=b,
+    showspaces=false,
+    showtabs=false,
+    xleftmargin=17pt,
+    framexleftmargin=17pt,
+    framexrightmargin=5pt,
+    framexbottommargin=4pt,
+    showstringspaces=false
+}
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\title{Problem Solving By Computer - Project 3}
+\date{}
+\maketitle
+
+\newpage
+\setcounter{section}{3}
+\input{appendix}
+
+\end{document}
