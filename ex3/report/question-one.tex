@@ -1,0 +1,84 @@
+\newpage
+\section{Return rate on low rating items}
+Since the majority of the customers who returned an order gave a low rating, we will start by finding a relation between the probability $P(r)$ that a product is likely to be returned and the rating $r$ the customer gave, using the following logistic function with two parameters $\alpha$ and $\beta$.
+
+$$P(r) = \frac{1}{1 + \exp(-\alpha r - \beta)}$$
+
+\noindent
+That is, if the rating is low, then the customer is more likely to return the product. In order to reduce the overall computation complexity, we will only consider the ratings of those customers who have returned a product for refund.
+
+\subsection{Preprocessing the data}
+As we wish to only consider the ratings of those customers who have returned at least one product for refund, we first need to filter out orders from the data set that do not satisfy these requirements. It follows that we can first obtain the list of customer IDs for those who have returned a product for refund by first filtering for orders that were returned, then using MATLAB's \lstinline|unique()| function to remove any duplicates.
+
+\begin{lstlisting}
+ReturnedOrders = AllOrders(strcmp(AllOrders.Return, 'Y'), :);
+Users_With_Returns = unique(ReturnedOrders.Customer_ID);
+\end{lstlisting}
+
+\noindent
+Next, we need to obtain the orders that were placed by customers that have returned at least one order, and have a rating left by the customer. That is, we need to obtain the set of orders whose \lstinline|Customer_ID| belongs in the \lstinline|Users_With_Returns| list, and have \lstinline|Rating > 0|. We can obtain such subset of orders by using logical indexing as follows.
+
+\begin{lstlisting}
+Orders = AllOrders(ismember(AllOrders.Customer_ID, Users_With_Returns), :);
+OrdersWithRatings = Orders(Orders.Rating > 0, :);
+\end{lstlisting}
+
+\noindent
+That is, \lstinline|OrdersWithRating| contains orders from \lstinline|AllOrders| such that the customers who placed the orders have returned at least one product for refund.
+
+\subsection{Finding the parameters $\alpha$ and $\beta$}
+Suppose we have a function $f(\alpha, \beta)$ which tells us the lack of fit of the logistic function $P(r, \alpha, \beta)$, then we can minimise the lack of fit by using MATLAB's \lstinline|fminsearch()| function, which finds the minimum of a multi-variable function. That is, we can create an error function $f(\alpha, \beta)$ which tells us the lack of fit of the logisitic function $P(r)$ with parameters $\alpha$ and $\beta$, then use \lstinline|fminsearch()| to minimise the error.
+
+\subsubsection{Models for the error function}
+We will use the non-linear least squares model for our error function. As the name suggests, the error is given by the sum of the square of the errors. The non-linear least squares error function is as follows.
+
+$$f(\alpha, \beta) = \sum_i \; \Big(p_i - P(r_i)\Big)^2 = \sum_i \; \Bigg(p_i - \frac{1}{1 + \exp(-\alpha r - \beta)}\Bigg)^2$$
+
+\noindent
+where $(r_i, p_i)$ is a transaction with rating $r_i \in [1, ..., 5]$ and a boolean flag $p_i \in \{0, 1\}$ which indicates whether the order was refunded, with 1 indicating that the order was refunded. \\
+
+\noindent
+The implementation of the non-linear least squares error function is as follows.
+
+\begin{lstlisting}
+function S = errorFunction(a, r, p)
+  S = 0;
+  for k = 1 : length(r)
+    S = S + (p(k) - 1 / (1 + exp(-a(1) * r(k) - a(2))))^2;
+  end
+end
+\end{lstlisting}
+
+\noindent
+It follows that we can use find the parameters $\alpha$ and $\beta$ by minimising the error function.
+
+\begin{lstlisting}
+orderRating = OrdersWithRatings.Rating;
+orderIsReturned = strcmp(OrdersWithRatings.Return, 'Y');
+lrParams = fminsearch(@(a) errorFunction(a, orderRating, orderIsReturned), [0 0]);
+fprintf('α = %.5f, β = %.5f\n', lrParams); 
+\end{lstlisting}
+
+\subsection{Results}
+
+We conclude that the relation between the probability $P(r)$ that a product is likely to returned and the rating $r$ the customer gave, is governed by the following logistic function.
+
+$$P(r) = \frac{1}{1 + \exp(17.542411 r - 17.418797)}$$
+
+\noindent
+That is, we conclude that the parameters are $\alpha = -17.542411$ and $\beta = 17.418797$. Moreover, we can plot the logistic function against the data points as follows.
+
+\begin{lstlisting}
+hx = linspace(0, 6, 1001);
+plot(orderRating, isOrderReturned, 'o', ...
+     hx, 1 ./ (1 + exp(-lrParams(1) * hx - lrParams(2))));
+lg = legend('Raw Data', 'Logistic Regression');
+set(lg,'Location', 'east');
+xlabel('Rating'); xticks([1 : 5]);
+ylabel('Order Returned'); yticks([0, 1]); yticklabels({'No', 'Yes'})
+axis([0.5, 5.5, -0.1, 1.1]);
+\end{lstlisting}
+
+\diagram{logistic_function}
+
+% TODO: Conclusion on the parameters and what they mean

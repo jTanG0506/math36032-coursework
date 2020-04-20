@@ -7,6 +7,7 @@
 \usepackage{amsfonts}
 \usepackage{lstfiracode}
 \usepackage{fontspec}
+\usepackage{enumitem}
 
 \setmonofont{Fira Code}[
   Contextuals=Alternate
@@ -23,6 +24,10 @@
   tabsize=2
 }
 
+\lstdefinelanguage{none}{
+  identifierstyle=
+}
+
 \makeatletter
 \lstdefinestyle{inline-style}{
   basicstyle=%
@@ -32,6 +37,12 @@
 \makeatother
 
 \newcommand*{\noaccsupp}[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+
+\newcommand\diagram[1]{
+	\begin{center}
+		\makebox[\textwidth]{\includegraphics[width=0.8\textwidth]{figures/#1}}
+	\end{center}
+}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -49,5 +60,6 @@
 \maketitle
 
 \input{introduction}
+\input{question-one}
 
 \end{document}
