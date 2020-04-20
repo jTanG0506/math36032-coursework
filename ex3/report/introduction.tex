@@ -1,0 +1,27 @@
+\section{Introduction}
+In the e-commerce world, there is an importance in being able to predict the behaviour of customers to survive in the market. In particular, is there a relation between a product being returned and the rating that was left by the customer? Moreover, are customers less likely to make future orders if they have previously returned a product for a refund? Finally, how can we determine the most valuable customers by deriving a ranking system which takes multiple attributes into account? \\
+
+\noindent
+In this project, we will analyse online transactions that were collected over four years for a given large online retailer. The data set is provided as a CSV (comma-separated values) file, and the first few lines of the data file are as follows. \\
+
+\begin{lstlisting}
+   Date      Customer_ID  Product_Category  Product_Value  Rating  Return
+___________  ___________  ________________  _____________  ______  ______
+01-Jan-2015    1010408           B              33.5         5       N 
+01-Jan-2015    1014220           C              18.4         4       N 
+01-Jan-2015    1016167           E              23.2         4       N 
+01-Jan-2015    1019094           D                46         0       Y 
+01-Jan-2015    1019535           D              25.5         0       N
+\end{lstlisting}
+$ $
+
+\noindent
+The schema of the data file is as follows.
+\begin{lstlisting}[language=none]
+Date: online transaction date (from 01 Jan 2015 to 31 Dec 2018)
+Customer_ID: anonymised customer ID
+Product_Category: one of 'A', 'B', 'C', 'D' or 'E'
+Product_Value: the total amount of the order, in £GBP
+Rating: the customer rating as a 1-5 star rating system, and 0 if no rating
+Return: whether the product was returned for refund, N or Y
+\end{lstlisting}
