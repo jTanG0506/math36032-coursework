@@ -25,3 +25,10 @@ Product_Value: the total amount of the order, in £GBP
 Rating: the customer rating as a 1-5 star rating system, and 0 if no rating
 Return: whether the product was returned for refund, N or Y
 \end{lstlisting}
+
+\noindent
+We will start by reading the csv file into a table. MATLAB will use type inference to determine the appropriate data types for the values in each column. In order to see the data types inferred by MATLAB, we can use the function \lstinline|summary(AllOrders)|.
+\begin{lstlisting}
+AllOrders = readtable('purchasing_order.csv');
+summary(AllOrders)
+\end{lstlisting}

@@ -32,7 +32,7 @@ Suppose we have a function $f(\alpha, \beta)$ which tells us the lack of fit of 
 \subsubsection{Models for the error function}
 We will use the non-linear least squares model for our error function. As the name suggests, the error is given by the sum of the square of the errors. The non-linear least squares error function is as follows.
 
-$$f(\alpha, \beta) = \sum_i \; \Big(p_i - P(r_i)\Big)^2 = \sum_i \; \Bigg(p_i - \frac{1}{1 + \exp(-\alpha r - \beta)}\Bigg)^2$$
+$$f(\alpha, \beta) = \sum_i \; \Big(p_i - P(r_i)\Big)^2 = \sum_i \; \Bigg(p_i - \frac{1}{1 + \exp(-\alpha r_i - \beta)}\Bigg)^2$$
 
 \noindent
 where $(r_i, p_i)$ is a transaction with rating $r_i \in [1, ..., 5]$ and a boolean flag $p_i \in \{0, 1\}$ which indicates whether the order was refunded, with 1 indicating that the order was refunded. \\
@@ -75,7 +75,7 @@ plot(orderRating, isOrderReturned, 'o', ...
 lg = legend('Raw Data', 'Logistic Regression');
 set(lg,'Location', 'east');
 xlabel('Rating'); xticks([1 : 5]);
-ylabel('Order Returned'); yticks([0, 1]); yticklabels({'No', 'Yes'})
+ylabel('Order Returned'); yticks([0, 1]); yticklabels({'No', 'Yes'});
 axis([0.5, 5.5, -0.1, 1.1]);
 \end{lstlisting}
 
