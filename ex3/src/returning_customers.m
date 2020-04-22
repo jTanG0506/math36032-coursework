@@ -1,8 +1,7 @@
 AllOrders = readtable('purchasing_order.csv');
 
 % Get all the users who have made at least one refund.
-Returned_Orders = AllOrders(strcmp(AllOrders.Return, 'Y'), :);
-Users_With_Returns = unique(Returned_Orders.Customer_ID);
+Users_With_Returns = unique(AllOrders(strcmp(AllOrders.Return, 'Y'), :).Customer_ID);
 
 % Get the orders that are placed by users that have made at least one refund.
 Orders = AllOrders(ismember(AllOrders.Customer_ID, Users_With_Returns), :);
@@ -34,17 +33,25 @@ end
 mapValues = m.values;
 customerSummary = [mapValues{:}];
 totalSpending = [customerSummary.totalBefore] + [customerSummary.totalAfter];
-percentSpentAfterRefund = [customerMeta.totalAfter] ./ totalSpending;
+percentSpentAfterRefund = [customerSummary.totalAfter] ./ totalSpending * 100;
+
+% Proportion of funds that were spent after the first refund.
+overallPercentSpentAfter = sum([customerSummary.totalAfter]) / sum([totalSpending]) * 100;
+fprintf('Overall, %.2f%% of the total order value was spent after a customers first refund\n', ...
+        overallPercentSpentAfter);
 
 % Average of a customers total order value after the first returned order.
-averageSpentAfter = mean(percentSpentAfterRefund) * 100;
-fprintf('The average of a customers total order value after the first refund is %.2f%%\n', averageSpentAfter);
+averageSpentAfter = mean(percentSpentAfterRefund);
+fprintf('The average of a customers total order value after the first refund is %.2f%%\n', ...
+        averageSpentAfter);
 
 % Percentage of customers who spent less than 50% of orders after first returned order.
-spentLessThanHalf = sum(percentSpentAfterRefund < 0.5) / length(percentSpentAfterRefund) * 100;
-fprintf('%.2f%% of customers spent less than half their total order value after the first refund\n', spentLessThanHalf);
+spentLessThanHalf = sum(percentSpentAfterRefund > 50) / length(percentSpentAfterRefund) * 100;
+fprintf('%.2f%% of customers spent more than half their total order value after the first refund\n', ...
+        spentLessThanHalf);
 
 % Histogram showing the distribution of order value after first returned order.
 histogram(percentSpentAfterRefund, 20);
 grid on;
-ylim([0 13]);
+xlabel('Percentage of total value spent after the first refund');
+ylabel('Number of customers'); ylim([0 13]);

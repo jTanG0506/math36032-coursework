@@ -18,8 +18,6 @@ T = outerjoin(TLeft, TRight, 'MergeKeys', true);
 % Replace any potential NaN values with 0.
 T = fillmissing(T, 'constant', 0);
 
-summary(T)
-
 % Normalise attributes and calculate ranking by summing the normalised attributes.
 T = normalize(T, 'norm', Inf, 'DataVariables', {'Mean_Value', 'Mean_Rating'});
 Ranking = table(T.Mean_Value + T.Mean_Rating, 'VariableNames', {'Ranking'});
