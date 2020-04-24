@@ -2,10 +2,10 @@ AllOrders = readtable('purchasing_order.csv');
 
 % Get all the users who have made at least one refund.
 ReturnedOrders = AllOrders(strcmp(AllOrders.Return, 'Y'), :);
-Users_With_Returns = unique(ReturnedOrders.Customer_ID);
+UsersWithReturns = unique(ReturnedOrders.Customer_ID);
 
 % Get the orders that are placed by users that have made at least one refund.
-Orders = AllOrders(ismember(AllOrders.Customer_ID, Users_With_Returns), :);
+Orders = AllOrders(ismember(AllOrders.Customer_ID, UsersWithReturns), :);
 OrdersWithRatings = Orders(Orders.Rating > 0, :);
 
 % Find parameters by minimising the cost function logreg.
