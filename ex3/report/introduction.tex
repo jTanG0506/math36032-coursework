@@ -1,4 +1,4 @@
-\section{Introduction}
+\section*{Introduction}
 In the e-commerce world, there is an importance in being able to predict the behaviour of customers to survive in the market. In particular, is there a relation between a product being returned and the rating that was left by the customer? Moreover, are customers less likely to make future orders if they have previously returned a product for a refund? Finally, how can we determine the most valuable customers by deriving a ranking system which takes multiple attributes into account? \\
 
 \noindent
@@ -27,7 +27,7 @@ Return: whether the product was returned for refund, N or Y
 \end{lstlisting}
 
 \noindent
-We will start by reading the csv file into a table. MATLAB will use type inference to determine the appropriate data types for the values in each column. In order to see the data types inferred by MATLAB, we can use the function \lstinline|summary(AllOrders)|.
+We will start by reading the CSV file into a table. MATLAB uses type inference to determine the appropriate data types for the values in each column. In order to see the data types inferred by MATLAB, we can use the function \lstinline|summary(AllOrders)|.
 \begin{lstlisting}
 AllOrders = readtable('purchasing_order.csv');
 summary(AllOrders)

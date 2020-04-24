@@ -1,6 +1,6 @@
 \newpage
 \section{Determining the most valuable customers}
-In e-commerce, the customer lifetime value (CLV) is the value a customer contributes to your business over their lifetime at your company. For example, we could say that customer who purchases many products from Category C are valuable, as these products have the highest profit margin. Similarly, we could say that customers that leave high ratings on our products are valuable, as they are more likely to recommend our products through word of mouth. \\
+In e-commerce, the customer lifetime value (CLV) is the value a customer contributes to your business over their lifetime at your company. For example, we could say that customers who purchase many products from Category C are valuable, as products from this category have a high profit margin. Similarly, we could say that customers that leave high ratings on our products are valuable, as they are more likely to recommend our products through word of mouth. \\
 
 \noindent
 For simplicity, all customers will be ranked according to the following criteria:
@@ -10,10 +10,10 @@ For simplicity, all customers will be ranked according to the following criteria
 \end{enumerate}
 
 \noindent
-Moreover, we wish to design our ranking system in such a way that customers ranked top according to one criteria are still likely to be on top in the ranking with both criteria. That is, the two given criteria are of equal importance and should be weighted equally. For example, a customer with a high average product value per order in Category C that has left no ratings on orders, should still be towards the top in our ranking system.
+Moreover, we wish to design our ranking system in such a way that customers ranked top according to one criterion are still likely to be on top in the ranking with both criteria. That is, the two given criteria are of equal importance and should be weighted equally. For example, a customer with a high average product value per order in Category C that has left no ratings on orders should still be towards the top in our ranking system.
 
 \subsection{Calculating the average order value and rating}
-In order to get the average product value per order in Category C by customer, we start by filtering for orders with product category C, then use \lstinline|groupsummary()| to group records by customer ID and take the mean of the product values. The implementation is as follows.
+In order to get the average product value per order in Category C by a customer, we start by filtering for orders with product category C, then use \lstinline|groupsummary()| to group records by customer ID and take the mean of the product values. The implementation is as follows.
 
 \begin{lstlisting}
 OrdersFromC = Orders(strcmp(Orders.Product_Category, 'C'), :);
@@ -53,7 +53,7 @@ T = fillmissing(T, 'constant', 0);
 All that remains is to derive a ranking based on the values \lstinline|Mean_Value| and \lstinline|Mean_Rating|. \\
 
 \subsection{How do we rank the customers?}
-We have a table \lstinline|T| whose rows consists of customer IDs along with their average order value for products in category C and the average rating they left across all orders. The first few rows of the table \lstinline|T| are as follows.
+Observe that we have constructed a table \lstinline|T| whose rows consists of customer IDs along with their average order value for products in category C and the average rating they left across all orders. The first few rows of the table \lstinline|T| are as follows.
 
 \begin{lstlisting}
                 Customer_ID      Mean_Value        Mean_Rating   
@@ -77,7 +77,7 @@ We can gain insights regarding the range of the data in our table by calling \ls
 \end{lstlisting}
 
 \noindent
-Observe that the range of values for the average order value is much greater than the range of values for the average rating. If we was to take the mean of the two values, the rating criteria would favour a higher average rating. In order to ensure that the two attributes have equal weighting, we normalise the columns respectively.
+Observe that the range of values for the average order value is much higher than the range of values for the average rating. If we were to take the mean of the two values, the ranking criteria would favour a higher average rating. In order to ensure that the two attributes have equal weighting, we normalise the columns, respectively.
 
 \begin{lstlisting}
 T = normalize(T, 'norm', Inf, 'DataVariables', {'Mean_Value', 'Mean_Rating'});
@@ -126,3 +126,5 @@ The first and last few customers ID's of the top 100 customers are listed below 
                       99      1013090      1.50660186310247                               
                      100      1019307      1.50495968187341                               
 \end{lstlisting}
+
+% TODO: Are customers that are top in one rank, top in overall rank.
