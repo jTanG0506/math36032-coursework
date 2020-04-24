@@ -1,14 +1,14 @@
 AllOrders = readtable('purchasing_order.csv');
 
 % Get all the users who have made at least one refund.
-Users_With_Returns = unique(AllOrders(strcmp(AllOrders.Return, 'Y'), :).Customer_ID);
+UsersWithReturns = unique(AllOrders(strcmp(AllOrders.Return, 'Y'), :).Customer_ID);
 
 % Get the orders that are placed by users that have made at least one refund.
-Orders = AllOrders(ismember(AllOrders.Customer_ID, Users_With_Returns), :);
+Orders = AllOrders(ismember(AllOrders.Customer_ID, UsersWithReturns), :);
 
 initialState = struct('hasRefunded', false, 'totalBefore', 0, 'totalAfter', 0);
-initialStates = repmat({initialState}, length(Users_With_Returns), 1);
-m = containers.Map(Users_With_Returns, initialStates);
+initialStates = repmat({initialState}, length(UsersWithReturns), 1);
+m = containers.Map(UsersWithReturns, initialStates);
 
 % Enumerate over all orders placed by users with at least one refund.
 for row = 1 : height(Orders)
@@ -30,8 +30,8 @@ for row = 1 : height(Orders)
   m(order.Customer_ID) = customer;
 end
 
-mapValues = m.values;
-customerSummary = [mapValues{:}];
+mapValues = m.values
+customerSummary = [mapValues{:}]
 totalSpending = [customerSummary.totalBefore] + [customerSummary.totalAfter];
 percentSpentAfterRefund = [customerSummary.totalAfter] ./ totalSpending * 100;
 

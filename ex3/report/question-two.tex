@@ -1,0 +1,91 @@
+\newpage
+\section{Making future orders after a refund}
+It is believed that customers are less likely to make future orders from a company after they have returned a product for a refund. In order to check the validity of this claim, we will calculate the percentage of total values spent after the first return over the values during the four years, excluding any returned and hence refunded orders.
+
+\subsection{Approach}
+We will keep track of three values for each customer, namely the total spent before the refund and the total spent after the refund, as well as a boolean flag \lstinline|hasReturned| to indicate whether a customer has returned a product yet. It follows that we can enumerate over the data set, and increment either the total spent before or total spent after value, depending on the value of the \lstinline|hasReturned| flag.
+
+\begin{lstlisting}[language=none]
+Enumerate over each order in the data set
+  If the order was refunded
+    Set the hasReturned flag on the customer to true
+  Else
+    If the customer has refunded an item already
+      Add the order value to the customers total after value
+    Else
+      Add the order value to the customers total before value
+\end{lstlisting}
+
+\subsection{Implementation}
+From our algorithm, we see that for each customer that has made a refund, we wish to store three properties, namely \lstinline|totalBefore|, \lstinline|totalAfter| and a \lstinline|hasReturned| flag. In order to store such properties for a single customer, we will create a state \lstinline|struct| which contains the required properties. In order to have a state \lstinline|struct| for each customer, we will use a \lstinline|Map| whose key will be the customer ID, with the value being the state structure. The setup of the \lstinline|Map| is shown in the diagram below.
+
+\fullwidthdiagram{map-struct}
+
+\noindent
+We can make use of \lstinline|repmat()| to setup the map such that every customer is mapped to the same initial state, namely \lstinline|{hasRefunded = false, totalBefore = 0, totalAfter = 0}|.
+
+\begin{lstlisting}
+initialState = struct('hasRefunded', false, 'totalBefore', 0, 'totalAfter', 0);
+initialStates = repmat({initialState}, length(UsersWithReturns), 1);
+m = containers.Map(UsersWithReturns, initialStates);
+\end{lstlisting}
+
+\noindent
+It follows that we can enumerate over the orders and update the customers state as follows.
+
+\begin{lstlisting}
+for row = 1 : height(Orders)
+  order = Orders(row, :);
+  customer = m(order.Customer_ID);
+
+  if strcmp(order.Return, 'Y')
+    customer.hasRefunded = true;
+  else
+    if customer.hasRefunded
+      customer.totalAfter = customer.totalAfter + order.Product_Value;
+    else
+      customer.totalBefore = customer.totalBefore + order.Product_Value;
+    end
+  end
+  
+  % Update the customer object in map
+  m(order.Customer_ID) = customer;     
+end
+\end{lstlisting}
+
+\noindent
+All that remains to do is to calculate the percentage of total values spent after the first return for each customer. Instead of iterating over the map of customers, we can make use of vector operations in MATLAB to compute a vector of percentages of total values spent after the first return. First, we destructure the cell array of map values, then destructure the fields of the resulting structure array into vectors. The implementation is as follows.
+
+\begin{lstlisting}
+mapValues = m.values;
+customerSummary = [mapValues{:}];
+totalSpending = [customerSummary.totalBefore] + [customerSummary.totalAfter];
+percentSpentAfterRefund = [customerSummary.totalAfter] ./ totalSpending * 100;
+\end{lstlisting}
+
+\noindent
+That is, \lstinline|percentSpentAfterRefund| is a vector whose values are the percentages of total values spent after the first return, where each entry corresponds to one customer. Finally, we can get the mean proportion of funds that were spent after the first refund as follows.
+
+\begin{lstlisting}
+averageSpentAfter = mean(percentSpentAfterRefund);
+fprintf('The average total order value spent after first refund is %.2f%%\n', ...
+        averageSpentAfter);
+\end{lstlisting}
+
+\newpage
+\subsection{Results}
+
+We conclude that the average percentage of customers total order value after the first refund is 50.42\%. That is, on average, customers spend just over half of their total order value after the first refund, and so the data does not support the claim that customers are less likely to make future orders after their first returned order. \\
+
+\noindent
+We can plot the distribution of total value spent after the first refund as follows.
+\begin{lstlisting}
+histogram(percentSpentAfterRefund, 20);
+grid on;
+xlabel('Percentage of total value spent after the first refund');
+ylabel('Number of customers');
+\end{lstlisting}
+
+\diagram{histogram}
+
+% TODO: Discuss results of the histogram and explanation of the tall bars on the extreme points.
