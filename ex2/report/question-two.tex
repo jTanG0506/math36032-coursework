@@ -60,7 +60,7 @@ We conclude that the two firing angles which yield a horizontal distance of 1500
 \diagram{firing_angles}
 
 \subsection{Finding the time and height for a given horizontal displacement}
-In order to determine whether the trajectory of the cannonball is blocked by the interceptor, we need to know the height of the cannonball when the distance travelled by the ball is 12000m. As the interceptors are moving, we also need to know the time taken for the cannonball to reach the horizontal distance of 12000m. In order to do this, we can add a non-terminating event to our event function, which we can use to obtain the time and height at which the cannonball arrives at the interceptors. We can add a second event to our event function as follows.
+In order to determine whether the trajectory of the cannonball is blocked by the interceptor, we need to know the height of the cannonball when the horizontal distance travelled by the ball is 12000m. As the interceptors are moving, we also need to know the time taken for the cannonball to reach the horizontal distance of 12000m. In order to do this, we can add a non-terminating event to our event function, which we can use to obtain the time and height at which the cannonball arrives at the interceptors. We can add a second event to our event function as follows.
 
 \begin{lstlisting}
 function [value, isTerminal, direction] = events_function(t, z, distance)

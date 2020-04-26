@@ -1,9 +1,8 @@
 \section{Modelling with air resistance}
-In practice, projectiles are affected not only by gravity, but also by air resistance. We will assume that only two forces are exerted on the cannonball: gravity and the friction force $F  = K \abs{\vec{v}}$, opposite to the direction of velocity $\vec{v}$, and proportional to the speed squared $\abs{\vec{v}}^2$ with constant $K = 0.00002\text{kgm}^{-1}$. Further, we will assume the gravitational constant to be 9.8$\text{ms}^{-1}$. We will make use of Newton's Second Law of Motion to formulate a system of differential equations to model the motion of the cannonball.
+In practice, projectiles are affected not only by gravity, but also by air resistance. We will assume that only two forces are exerted on the cannonball: gravity and the friction force $F  = K \abs{\vec{v}}^2$, opposite to the direction of velocity $\vec{v}$, and proportional to the speed squared $\abs{\vec{v}}^2$ with constant $K = 0.00002\text{kgm}^{-1}$. Further, we will assume the gravitational constant to be 9.8$\text{ms}^{-1}$. We will make use of Newton's Second Law of Motion to formulate a system of differential equations to model the motion of the cannonball.
 
 \input{figures/projectile-forces}
 
-\newpage
 \noindent
 Newton's Second Law of Motion states that the sum of forces $\vec{F}$ acting on an object is equal to the mass of the object, $m$, multiplied by the acceleration of the object, $\vec{a}$.
 $$m\vec{a} = m\vec{g} - K\abs{\vec{v}}\vec{v}$$
@@ -32,7 +31,7 @@ $$
 
 \noindent
 The initial conditions for our system of ODEs is given by
-$$s(0) = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \quad \text{and} \quad s'(0) = \begin{bmatrix} 450 \cos \theta \\ 450 \sin \theta \end{bmatrix}$$
+$$s(0) = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \quad \text{and} \quad s'(0) = \begin{bmatrix} v_0 \cos \theta \\ v_0 \sin \theta \end{bmatrix}$$
 
 \noindent
 As MATLAB's ODE solver, \lstinline|ode45|, only solves first order ODEs of the form $z' = f(t, z)$, we must reduce our second order system to a first order system. In order to do this, we define $z = [s_x(t), s_y(t), v_x(t), v_y(t)]^\top$ where $s_x, s_y$ are the component-wise displacement functions and $v_x, v_y$ are the component-wise velocity functions, and rewrite the system of equations as follows.
