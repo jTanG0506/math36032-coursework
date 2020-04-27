@@ -1,9 +1,9 @@
 \newpage
 \section{Making future orders after a refund}
-It is believed that customers are less likely to make future orders from a company after they have returned a product for a refund. In order to check the validity of this claim, we will calculate the percentage of total values spent after the first return over the values during the four years, excluding any returned and hence refunded orders.
+It is believed that customers are less likely to make future orders from a company after they have returned a product for a refund. In order to check the validity of this claim, we will calculate the percentage of total values spent after the first return over the total value spent during the four years, excluding any returned and hence refunded orders.
 
 \subsection{Approach}
-We will keep track of three values for each customer, namely the total spent before the refund and the total spent after the refund, as well as a boolean flag \lstinline|hasReturned| to indicate whether a customer has returned a product yet. It follows that we can enumerate over the data set, and increment either the total spent before or total spent after value, depending on the value of the \lstinline|hasReturned| flag.
+We will keep track of three values for each customer, namely the total spent before the refund, the total spent after the refund, and a boolean flag \lstinline|hasReturned| to indicate whether a customer has returned a product yet. It follows that we can enumerate over the data set, and increment either the total spent before or total spent after value, depending on the value of the \lstinline|hasReturned| flag. The pseudocode for the algorithm is as follows.
 
 \begin{lstlisting}[language=none]
 Enumerate over each order in the data set
@@ -58,13 +58,13 @@ All that remains to do is to calculate the percentage of total values spent afte
 
 \begin{lstlisting}
 mapValues = m.values;
-customerSummary = [mapValues{:}];
-totalSpending = [customerSummary.totalBefore] + [customerSummary.totalAfter];
-percentSpentAfterRefund = [customerSummary.totalAfter] ./ totalSpending * 100;
+customerData = [mapValues{:}];
+totalSpending = [customerData.totalBefore] + [customerData.totalAfter];
+percentSpentAfterRefund = [customerData.totalAfter] ./ totalSpending * 100;
 \end{lstlisting}
 
 \noindent
-That is, \lstinline|percentSpentAfterRefund| is a vector whose values are the percentages of total values spent after the first return, where each entry corresponds to one customer. Finally, we can get the mean proportion of funds that were spent after the first refund as follows.
+That is, \lstinline|percentSpentAfterRefund| is a vector whose values are the percentages of total values spent after the first return, where each entry corresponds to one customer. Finally, we can get the mean percentage of funds that were spent after the first refund as follows.
 
 \begin{lstlisting}
 averageSpentAfter = mean(percentSpentAfterRefund);
