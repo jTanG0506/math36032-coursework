@@ -17,7 +17,7 @@ Enumerate over each order in the data set
 \end{lstlisting}
 
 \subsection{Implementation}
-From our algorithm, we see that for each customer that has made a refund, we wish to store three properties, namely \lstinline|totalBefore|, \lstinline|totalAfter| and a \lstinline|hasReturned| flag. In order to store such properties for a single customer, we will create a state \lstinline|struct| which contains the required properties. In order to have a state \lstinline|struct| for each customer, we will use a \lstinline|Map| whose key will be the customer ID, with the value being the state structure. The setup of the \lstinline|Map| is shown in the diagram below.
+From our algorithm, we see that for each customer that has made a refund, we wish to store three properties, namely \lstinline|totalBefore|, \lstinline|totalAfter| and a \lstinline|hasReturned| flag. In order to store such properties for a single customer, we will create a state \lstinline|struct| which contains the required properties. In order to have a state \lstinline|struct| for each customer, we will use a \lstinline|Map| whose key will be the customer ID, with the value being the state structure.
 
 \fullwidthdiagram{map-struct}
 

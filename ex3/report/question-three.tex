@@ -33,7 +33,8 @@ Ratings = groupsummary(OrdersWithRatings, {'Customer_ID'}, 'mean', 'Rating');
 \subsection{Creating a customer table using outer join}
 
 % TODO: Description of why we wish to create such customer table.
-% TODO: Diagram showing how outer join of two tables works.
+
+\diagram{outer-join}
 
 \begin{lstlisting}
 TLeft = table(CatCValue.Customer_ID, CatCValue.mean_Product_Value, ...
@@ -108,33 +109,18 @@ disp(T(1:10, {'Customer_ID', 'Ranking'}));
 The first and last few customers ID's of the top 100 customers are listed below with their respective ranking score.
 
 \begin{lstlisting}
-                    Rank    Customer_ID        Ranking                                    
-                    ____    ___________    ________________                               
-
-                       1      1011981      1.96194036825872                               
-                       2      1014288       1.8757080100944                               
-                       3      1014953      1.86153846153846                               
-                       4      1012195      1.81470230862697                               
-                       5      1014622      1.78196300796544                               
-                       6      1016309      1.77545565006075                               
-                       7      1016326       1.7579181855002                               
-                       8      1015292      1.74448079259744                               
-                       9      1011918      1.72833805859322                               
-                      10      1010983      1.71454029971648                               
-                                ...              ...                                      
-                                ...              ...                                      
-                                ...              ...                                      
-                      90      1016337      1.51968408262454                               
-                      91      1015223      1.51756692072609                               
-                      92      1014365      1.51545344084834                               
-                      93      1018272      1.51533193416547                               
-                      94      1011746      1.51381862366066                               
-                      95      1011044      1.51246456055083                               
-                      96      1016208      1.51063735778195                               
-                      97      1012212      1.50794653705954                               
-                      98      1016515      1.50784652771287                               
-                      99      1013090      1.50660186310247                               
-                     100      1019307      1.50495968187341                               
+ Rank     Customer_ID     Ranking             Rank     Customer_ID     Ranking  
+______    ___________    __________          ______    ___________    __________
+   1        1011981       4.296188             91        1015381       1.766911
+   2        1012195       3.648415             92        1016337       1.765041
+   3        1014288       3.517242             93        1013972       1.746114
+   4        1014953       3.388462             94        1015027       1.740111
+   5        1016309       3.083884             95        1014365       1.710303
+   6        1014622       3.077197             96        1010858       1.708982
+   7        1011918       3.042131             97        1012216       1.708916
+   8        1010983       3.011226             98        1010467       1.707552
+   9        1011559       2.978029             99        1011392       1.696560
+  10        1011508       2.930852            100        1012348       1.694950
 \end{lstlisting}
 
 % TODO: Are customers that are top in one rank, top in overall rank.
