@@ -1,13 +1,13 @@
 Orders = readtable('purchasing_order.csv');
+OrdersFromC = Orders(strcmp(Orders.Product_Category, 'C'), :);
 
 % Mean order value for Category C products, by Customer ID.
-OrdersFromC = Orders(strcmp(Orders.Product_Category, 'C') ...
-                     & strcmp(Orders.Return, 'N'), :);
+NonReturnedOrders = OrdersFromC(strcmp(OrdersFromC.Return, 'N'), :);
 CatCValue = groupsummary(OrdersFromC, {'Customer_ID'}, ...
                          'mean', 'Product_Value');
 
 % Mean rating, by Customer ID.
-OrdersWithRatings = Orders(Orders.Rating > 0, :);
+OrdersWithRatings = OrdersFromC(OrdersFromC.Rating > 0, :);
 Ratings = groupsummary(OrdersWithRatings, {'Customer_ID'}, ...
                        'mean', 'Rating');
 

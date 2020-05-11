@@ -32,15 +32,14 @@ for row = 1 : height(Orders)
   m(order.Customer_ID) = customer;
 end
 
-mapValues = m.values
-customerData = [mapValues{:}]
+mapValues = m.values;
+customerData = [mapValues{:}];
 totalSpending = [customerData.totalBefore] + [customerData.totalAfter];
 percentSpentAfterRefund = [customerData.totalAfter] ./ totalSpending * 100;
 
 % Average of a customers total order value after the first returned order.
 averageSpentAfter = mean(percentSpentAfterRefund);
-fprintf('The average of a customers total order value after the first
-         refund is %.2f%%\n', averageSpentAfter);
+fprintf('The average of a customers total order value after the first refund is %.2f%%\n', averageSpentAfter);
 
 histogram(percentSpentAfterRefund, 20);
 grid on;
