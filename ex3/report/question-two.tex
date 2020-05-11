@@ -86,6 +86,12 @@ xlabel('Percentage of total value spent after the first refund');
 ylabel('Number of customers');
 \end{lstlisting}
 
-\diagram{histogram}
+\begin{figure}[h]
+  \centering
+  \diagram{histogram}
+  \caption{Distribution of total value spent after a customers first refund}
+  \label{fig:histogram}
+\end{figure}
 
-% TODO: Discuss results of the histogram and explanation of the tall bars on the extreme points.
+\noindent
+Figure \ref{fig:histogram} shows that customers are not less likely to make future orders after their first returned ordered as the distribution of total value spent after the first refund does not appear to be in a decreasing manner. That is, if it were the case that customers are less likely to place future orders after their first refund, we would expect Figure \ref{fig:histogram} to resemble a right-angle triangle, where the number of customers decreases as the percentage of total value spent increases.
