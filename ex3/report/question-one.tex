@@ -75,10 +75,7 @@ plot(orderRating, isReturned, 'o', ...
 lg = legend('Raw Data', 'Logistic Regression');
 set(lg, 'Location', 'east');
 xlabel('Rating'); xticks([1 : 5]);
-ylabel('Order Returned'); yticks([0, 1]); yticklabels({'No', 'Yes'});
+ylabel('Order Returned');
+yticks([0, 1]); yticklabels({'No', 'Yes'});
 axis([0.5, 5.5, -0.1, 1.1]);
 \end{lstlisting}
-
-\diagram{logistic_function}
-
-% TODO: Conclusion on the parameters and what they mean
