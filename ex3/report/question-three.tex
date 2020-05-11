@@ -1,12 +1,12 @@
 \newpage
 \section{Determining the most valuable customers}
-In e-commerce, the customer lifetime value (CLV) is the value a customer contributes to your business over their lifetime at your company. For example, we could say that customers who purchase many products from Category C are valuable, as products from this category have a high profit margin. Similarly, we could say that customers that leave high ratings on our products are valuable, as they are more likely to recommend our products through word of mouth. \\
+In e-commerce, the customer lifetime value (CLV) is the value a customer contributes to your business over their lifetime at your company. For example, we could say that customers who purchase many products from category C are valuable, as products from this category have a high profit margin. Similarly, we could say that customers that leave high ratings on our products are valuable, as they are more likely to recommend our products through word of mouth. \\
 
 \noindent
 For simplicity, all customers will be ranked according to the following criteria:
 \begin{enumerate}[label=(\arabic*)]
   \item average product value per order in category C
-  \item the average rating left on orders
+  \item the average rating left on orders in category C
 \end{enumerate}
 
 \noindent
@@ -25,14 +25,13 @@ CatCValue = groupsummary(OrdersFromC, {'Customer_ID'}, 'mean', 'Product_Value');
 Similarly, we can get the average rating for each customer by using the \lstinline|groupsummary()| method on the subset of orders which have a rating. Given that the a rating of 0 implies that a particular product was not rated by the customer, we can get the subset of orders which have a rating by simply checking whether the rating is non-zero. Further, this check will also filter out any orders which have a \lstinline|NaN| rating, and so we have also dealt with case when the data set contains missing data.
 
 \begin{lstlisting}
-OrdersWithRatings = Orders(Orders.Rating > 0, :);
+OrdersWithRatings = OrdersFromC(OrdersFromC.Rating > 0, :);
 Ratings = groupsummary(OrdersWithRatings, {'Customer_ID'}, 'mean', 'Rating');
 \end{lstlisting}
 
 \newpage
 \subsection{Creating a customer table using outer join}
-
-% TODO: Description of why we wish to create such customer table.
+Now that we have an average order value and an average rating for each customer, we wish to create a table such that each row contains a customer ID, their average order value, and their average rating. In fact, we can create such table by using an outer join on the two separate tables we have created. The implementation of creating such table is as follows.
 
 \diagram{outer-join}
 
@@ -67,19 +66,20 @@ Observe that we have constructed a table \lstinline|T| whose rows consists of cu
                   1010320        33.566666667                4.8  
 \end{lstlisting}
 
+\newpage
 \noindent
 We can gain insights regarding the range of the data in our table by calling \lstinline|summary(T)|.
 
 \begin{lstlisting}
       Mean_Value: 913x1 double              Mean_Rating: 913x1 double            
         Values:                               Values:            
-          Min                0                  Min       2.444444444                
-          Median          31.7                  Median    4.363636363                
+          Min              5.4                  Min                 0                
+          Median          33.5                  Median            4.5                
           Max             82.3                  Max                 5    
 \end{lstlisting}
 
 \noindent
-Observe that the range of values for the average order value is much higher than the range of values for the average rating. If we were to take the mean of the two values, the ranking criteria would favour a higher average rating. In order to ensure that the two attributes have equal weighting, we will standardise the data by converting them into standard scores. The standard score is the number of standard deviations by which the value of a data point is above or below the mean value. For example, a customer who leaves an average rating of 4.6 will have a positive standard score, whereas a customer who leaves an average of 4.2 will have a negative standard score, as the mean rating across all orders is 4.3636.
+Observe that the range of values for the average order value is much higher than the range of values for the average rating. If we were to take the mean of the two values, the ranking criteria would favour a higher average rating. In order to ensure that the two attributes have equal weighting, we will standardise the data by converting them into standard scores. The standard score is the number of standard deviations by which the value of a data point is above or below the mean value. For example, a customer who leaves an average rating of 4.6 will have a positive standard score, whereas a customer who leaves an average of 4.2 will have a negative standard score, as the mean rating across all orders is 4.3636. \\
 
 \noindent
 A data point $x$ is converted into a standard score $Z$ by
@@ -98,29 +98,29 @@ T = [T Ranking];
 
 \subsection{Results}
 
-In order to get the most valuable customers, we need to sort the table \lstinline|T| based on the \lstinline|Ranking| column, in descending order. That is, a customer with a higher ranking is a more valuable customer, and perhaps we may wish to reward the most valuable customers with a coupon for their next purchase as a sign of gratitude.
+In order to get the most valuable customers, we need to sort the table \lstinline|T| based on the \lstinline|Ranking| column, in descending order. That is, a customer with a higher ranking is a more valuable customer, and perhaps we may wish to reward the most valuable customers with a coupon for their next purchase as a sign of gratitude. We can sort the table based on the derived ranking and display the top 10 and the last 10 of the top 100 as follows.
 
 \begin{lstlisting}
 T = sortrows(T, 'Ranking', 'Descend');
 disp(T(1:10, {'Customer_ID', 'Ranking'}));
+disp(T(91:100, {'Customer_ID', 'Ranking'}));
 \end{lstlisting}
 
+\newpage
 \noindent
 The first and last few customers ID's of the top 100 customers are listed below with their respective ranking score.
 
 \begin{lstlisting}
  Rank     Customer_ID     Ranking             Rank     Customer_ID     Ranking  
 ______    ___________    __________          ______    ___________    __________
-   1        1011981       4.296188             91        1015381       1.766911
-   2        1012195       3.648415             92        1016337       1.765041
-   3        1014288       3.517242             93        1013972       1.746114
-   4        1014953       3.388462             94        1015027       1.740111
-   5        1016309       3.083884             95        1014365       1.710303
-   6        1014622       3.077197             96        1010858       1.708982
-   7        1011918       3.042131             97        1012216       1.708916
-   8        1010983       3.011226             98        1010467       1.707552
-   9        1011559       2.978029             99        1011392       1.696560
-  10        1011508       2.930852            100        1012348       1.694950
+   1        1014288       4.369582             91        1014680       1.626465
+   2        1011981       4.331798             92        1011938       1.600016
+   3        1016326       3.700806             93        1016515       1.578864
+   4        1014953       3.622792             94        1015724       1.577346
+   5        1016309       3.602567             95        1010546       1.573568
+   6        1014429       3.372085             96        1012660       1.559120
+   7        1012195       3.224727             97        1016303       1.539376
+   8        1016438       3.187610             98        1014434       1.536450
+   9        1016443       3.175608             99        1016848       1.535784
+  10        1015864       3.134046            100        1015439       1.533931   
 \end{lstlisting}
-
-% TODO: Are customers that are top in one rank, top in overall rank.
