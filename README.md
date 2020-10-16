@@ -7,13 +7,13 @@
 - [Question 1: Cubic Taxicab Number](ex1/ex1)
 - [Question 2: Catalan's Constant](ex1/ex2)
 - [Question 3: Sum of Reciprocal Squares with Prime Factors](ex1/ex3)
-- [Report for Project 1](ex1/report)
+- [Report for Project 1 (Grade: 93%)](ex1/report)
 
 ### Project 2 - Projectile Motion
 - [Source Code](ex2/src)
-- [Report for Project 2](ex2/report)
+- [Report for Project 2 (Grade: 94%)](ex2/report)
 
 ### Project 3 - e-Commerce Data Analysis
 - [Source Code](ex3/src)
 - [Data Set](ex3/src/purchasing_order.csv)
-- [Report for Project 3](ex3/report)
+- [Report for Project 3 (Grade: 93%)](ex3/report)
